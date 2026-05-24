@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Biznet Metronet — Price List</title>
+  <style>
+    :root {
+      --biznet-blue: #003366;
+      --biznet-accent: #0066b3;
+      --biznet-light: #e8f4fc;
+      --border: #d0dae6;
+      --bg-muted: #f5f9fc;
+      --grp-spec: #f8fafc;
+      --grp-rincian: #fff;
+      --grp-tagihan: #eef4fa;
+      --grp-pph: #fff8f0;
+      --grp-awal: #f3eef8;
+      --grp-bulan: #e8f4fc;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 100%;
+      margin: 0 auto;
+      padding: 20px 24px 32px;
+      color: #1a1a1a;
+      line-height: 1.45;
+      background: #f0f4f8;
+    }
+    #view-main { max-width: 1280px; margin: 0 auto; }
+    .view { display: none; }
+    .view.active { display: block; }
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .top-bar a {
+      color: var(--biznet-accent);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    .top-bar a:hover { text-decoration: underline; }
+    h1 {
+      font-size: 1.1rem;
+      color: var(--biznet-blue);
+      margin: 0 0 12px;
+      text-align: center;
+    }
+    h2 {
+      font-size: 1.15rem;
+      color: var(--biznet-blue);
+      margin: 0 0 16px;
+    }
+    .badges { margin-bottom: 12px; display: flex; flex-wrap: wrap; gap: 8px; }
+    .ppn-badge {
+      display: inline-block;
+      background: #e8f4ea;
+      color: #1a5c2e;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .pph-badge {
+      display: none;
+      background: #fff3e0;
+      color: #8a4b00;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .pph-badge.on { display: inline-block; }
+    .schemes-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .scheme-box {
+      flex: 1;
+      min-width: 260px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .scheme-box strong {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: #666;
+      width: 100%;
+    }
+    .scheme-box label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      font-size: 0.88rem;
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid transparent;
+      transition: background 0.15s;
+    }
+    .scheme-box label:has(input:checked) {
+      background: var(--biznet-light);
+      border-color: var(--biznet-accent);
+      color: var(--biznet-blue);
+      font-weight: 600;
+    }
+    .table-card {
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 16px rgba(0, 51, 102, 0.08);
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .table-card h1 {
+      margin: 0;
+      padding: 16px 20px;
+      background: linear-gradient(135deg, var(--biznet-blue), var(--biznet-accent));
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+      text-align: left;
+    }
+    .table-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .table-wrap::-webkit-scrollbar { height: 8px; }
+    .table-wrap::-webkit-scrollbar-thumb {
+      background: #b0c4d8;
+      border-radius: 4px;
+    }
+    .price-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 0.8125rem;
+      min-width: 960px;
+    }
+    .price-table th,
+    .price-table td {
+      border-bottom: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      padding: 10px 12px;
+      vertical-align: middle;
+    }
+    .price-table th:last-child,
+    .price-table td:last-child { border-right: none; }
+    .price-table thead th {
+      color: var(--biznet-blue);
+      font-weight: 600;
+      text-align: center;
+      line-height: 1.3;
+    }
+    .price-table thead tr.head-group th {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 10px 8px;
+      border-bottom: 2px solid var(--biznet-accent);
+    }
+    .price-table thead tr.head-detail th {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 8px 10px;
+      background: #f0f4f8;
+    }
+    .price-table thead tr.head-detail th small {
+      display: block;
+      font-weight: 400;
+      color: #666;
+      font-size: 0.68rem;
+      margin-top: 2px;
+    }
+    .grp-spec { background: var(--grp-spec) !important; }
+    .grp-rincian { background: #fafbfc !important; }
+    .grp-tagihan { background: var(--grp-tagihan) !important; }
+    .grp-pph { background: var(--grp-pph) !important; }
+    .grp-awal { background: var(--grp-awal) !important; }
+    .grp-bulan { background: var(--grp-bulan) !important; }
+    .price-table tbody tr:nth-child(even) { background: #fafbfd; }
+    .price-table tbody tr:hover { background: #eef6ff; }
+    .price-table tbody tr:last-child td { border-bottom: none; }
+    .col-sticky {
+      position: sticky;
+      left: 0;
+      z-index: 2;
+      background: inherit;
+      box-shadow: 2px 0 6px rgba(0,0,0,0.04);
+      min-width: 100px;
+    }
+    thead .col-sticky { z-index: 3; background: #fff; }
+    thead tr.head-detail .col-sticky { background: #f0f4f8; }
+    tbody tr:nth-child(even) .col-sticky { background: #fafbfd; }
+    tbody tr:hover .col-sticky { background: #eef6ff; }
+    td.layanan { text-align: left; }
+    .plan-name {
+      font-weight: 700;
+      color: var(--biznet-blue);
+      font-size: 0.9rem;
+    }
+    td.bw { text-align: center; font-size: 0.8rem; color: #444; }
+    td.bw strong { display: block; color: #222; }
+    td.num {
+      text-align: right;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+      font-size: 0.8rem;
+    }
+    td.grp-spec { background: var(--grp-spec); }
+    td.grp-rincian { background: #fff; }
+    td.grp-tagihan { background: var(--grp-tagihan); font-weight: 600; }
+    td.grp-pph { background: var(--grp-pph); }
+    td.grp-awal { background: var(--grp-awal); }
+    td.grp-bulan { background: var(--grp-bulan); }
+    td.bayar-final {
+      font-weight: 700;
+      color: var(--biznet-blue);
+      font-size: 0.85rem;
+    }
+    .tag-free {
+      display: inline-block;
+      background: #e8f4ea;
+      color: #1a5c2e;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .dash { color: #bbb; }
+    .materai-lbr {
+      display: block;
+      font-size: 0.68rem;
+      color: #666;
+      margin-top: 2px;
+    }
+    .info-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .section-title {
+      font-weight: 700;
+      margin: 0 0 10px;
+      color: var(--biznet-blue);
+      font-size: 0.95rem;
+    }
+    ol.terms, ul.features {
+      margin: 0;
+      padding-left: 1.25rem;
+      font-size: 0.88rem;
+    }
+    #view-settings {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 12px;
+      padding: 24px;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    }
+    .plan-settings .settings-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      margin-top: 12px;
+    }
+    .plan-settings .settings-table th,
+    .plan-settings .settings-table td {
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+    }
+    .plan-settings .settings-table th {
+      background: #f0f4f8;
+      color: var(--biznet-blue);
+      text-align: left;
+    }
+    ol.terms li { margin-bottom: 6px; }
+    footer {
+      margin-top: 28px;
+      padding-top: 12px;
+      border-top: 1px solid #ccc;
+      font-size: 0.8rem;
+      color: #444;
+      text-align: center;
+    }
+    button, .btn {
+      padding: 8px 16px;
+      background: var(--biznet-accent);
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      text-decoration: none;
+      display: inline-block;
+    }
+    button:hover, .btn:hover { background: var(--biznet-blue); }
+    button.secondary {
+      background: #fff;
+      color: var(--biznet-blue);
+      border: 1px solid var(--biznet-accent);
+    }
+    button.secondary:hover { background: var(--bg-muted); }
+    .settings-card {
+      background: var(--bg-muted);
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .settings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .settings-grid label {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+    .settings-grid input {
+      padding: 8px 10px;
+      font-size: 1rem;
+      border: 1px solid #999;
+      border-radius: 4px;
+      font-weight: 400;
+    }
+    .plan-settings { overflow-x: auto; }
+    .plan-settings table input {
+      width: 100%;
+      min-width: 90px;
+      padding: 6px;
+      border: 1px solid #999;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      text-align: right;
+    }
+    .settings-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+    .saved-toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1a5c2e;
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+    }
+    .saved-toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+  <div id="view-main" class="view active">
+    <div class="top-bar">
+      <a href="#pengaturan">⚙ Pengaturan harga</a>
+    </div>
+
+    <div class="badges">
+      <span class="ppn-badge" id="ppnLabel">Sudah termasuk PPN 11%</span>
+      <span class="pph-badge" id="pphBadge">Pemotongan PPh 23 aktif</span>
+    </div>
+
+    <div class="schemes-row">
+      <div class="scheme-box">
+        <strong>Skema modem</strong>
+        <label><input type="radio" name="modemScheme" value="buy" /> Beli</label>
+        <label><input type="radio" name="modemScheme" value="rent" checked /> Sewa</label>
+      </div>
+      <div class="scheme-box">
+        <strong>Skema PPh 23</strong>
+        <label><input type="radio" name="pph23Scheme" value="none" checked /> Tanpa pemotongan</label>
+        <label><input type="radio" name="pph23Scheme" value="withhold" /> Dengan pemotongan</label>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <h1>Biznet Metronet — Layanan Broadband Internet</h1>
+      <div class="table-wrap">
+        <table class="price-table" id="priceTable">
+          <thead id="tableHead"></thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <p class="section-title">Syarat dan Ketentuan</p>
+      <ol class="terms">
+        <li id="termPpn">Harga di atas sudah termasuk PPN 11%.</li>
+        <li id="termPph23" style="display:none;"></li>
+        <li id="termMaterai">Pembayaran di atas Rp 5.000.000 dikenakan materai 1 lembar (dilampirkan pada bukti bayar).</li>
+        <li>Sistem pembayaran menggunakan sistem voucher prabayar untuk pengisian layanan.</li>
+        <li>Waktu pemasangan 3–8 hari kerja untuk area yang sudah tercover (on-net).</li>
+        <li>Untuk paket mulai 500 Mbps ke atas, diperlukan survey infrastruktur terlebih dahulu.</li>
+        <li>Metronet 1D tidak tersedia untuk gedung bertingkat tinggi.</li>
+      </ol>
+    </div>
+
+    <div class="info-card">
+      <p class="section-title">Fitur Standar</p>
+      <ul class="features">
+        <li>Internet bandwidth sharing tanpa kuota dengan 1 Dynamic IP Address.</li>
+        <li>Customer service 24/7/365.</li>
+        <li>Koneksi menggunakan RJ45 Ethernet, dapat dihubungkan ke Router/Switch.</li>
+      </ul>
+    </div>
+
+    <footer>
+      <strong>PT. Supra Primatama Nusantara</strong> (Biznet)<br />
+      MidPlaza 2, Lantai 8. Jl. Jend. Sudirman 10-11. Jakarta 10220 — Indonesia<br />
+      www.biznetnetworks.com
+    </footer>
+  </div>
+
+  <div id="view-settings" class="view">
+    <div class="top-bar">
+      <a href="#">← Kembali ke price list</a>
+    </div>
+    <h2>Pengaturan Harga</h2>
+    <p style="font-size:0.9rem;color:#555;margin-top:-8px;">
+      Perubahan disimpan di browser ini dan dipakai pada tabel price list.
+    </p>
+
+    <div class="settings-card">
+      <div class="settings-grid">
+        <label>
+          Biaya instalasi (belum PPN) — Rp
+          <input type="number" id="setInstalasi" min="0" step="50000" />
+        </label>
+        <label>
+          Tarif PPN (%)
+          <input type="number" id="setPpn" min="0" max="100" step="0.1" />
+        </label>
+        <label>
+          Tarif PPh 23 (% dari DPP)
+          <input type="number" id="setPph23" min="0" max="100" step="0.1" />
+        </label>
+        <label>
+          Batas pembayaran materai — Rp
+          <input type="number" id="setMateraiThreshold" min="0" step="100000" />
+        </label>
+        <label>
+          Nilai materai per lembar — Rp
+          <input type="number" id="setMateraiNominal" min="0" step="1000" />
+        </label>
+      </div>
+      <p style="font-size:0.8rem;color:#555;margin:12px 0 0;">
+        PPh 23 dihitung dari DPP (harga sebelum PPN). Net diterima = total tagihan − PPh 23.<br />
+        Materai berlaku jika total tagihan &gt; batas (default Rp 5.000.000), maksimal 1 lembar per pembayaran.
+      </p>
+    </div>
+
+    <div class="settings-card plan-settings">
+      <strong>Harga dasar per paket (belum PPN)</strong>
+      <table class="settings-table">
+        <thead>
+          <tr>
+            <th>Paket</th>
+            <th>Biaya Bulanan</th>
+            <th>Beli Modem</th>
+            <th>Sewa Modem / bln</th>
+          </tr>
+        </thead>
+        <tbody id="planSettingsBody"></tbody>
+      </table>
+    </div>
+
+    <div class="settings-actions">
+      <button type="button" id="btnSave">Simpan pengaturan</button>
+      <a href="#" class="btn secondary">Batal & kembali</a>
+      <button type="button" class="secondary" id="btnReset">Reset ke default</button>
+    </div>
+  </div>
+
+  <div class="saved-toast" id="toast">Pengaturan disimpan</div>
+
+  <script>
+    const DEFAULT = {
+      instalasiBase: 1250000,
+      ppnRate: 11,
+      pph23Rate: 2,
+      materaiThreshold: 5000000,
+      materaiNominal: 10000,
+      plans: [
+        { layanan: "Metronet 1D", local: "100 Mbps", intl: "Sampai 100 Mbps", bulanan: 1000000, alatBuy: 1100000, alatRent: 50000, alatFree: false },
+        { layanan: "Metronet 2D", local: "150 Mbps", intl: "Sampai 150 Mbps", bulanan: 1700000, alatBuy: 1100000, alatRent: 50000, alatFree: false },
+        { layanan: "Metronet 3D", local: "200 Mbps", intl: "Sampai 200 Mbps", bulanan: 2700000, alatBuy: 1100000, alatRent: 50000, alatFree: false },
+        { layanan: "Metronet 4D", local: "450 Mbps", intl: "Sampai 450 Mbps", bulanan: 6500000, alatBuy: 0, alatRent: 0, alatFree: true },
+        { layanan: "Metronet 5D", local: "900 Mbps", intl: "Sampai 900 Mbps", bulanan: 12500000, alatBuy: 0, alatRent: 0, alatFree: true },
+      ],
+    };
+
+    const STORAGE_KEY = "metronet_price_settings";
+
+    function loadSettings() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return structuredClone(DEFAULT);
+        const parsed = JSON.parse(raw);
+        return {
+          instalasiBase: parsed.instalasiBase ?? DEFAULT.instalasiBase,
+          ppnRate: parsed.ppnRate ?? DEFAULT.ppnRate,
+          pph23Rate: parsed.pph23Rate ?? DEFAULT.pph23Rate,
+          materaiThreshold: parsed.materaiThreshold ?? DEFAULT.materaiThreshold,
+          materaiNominal: parsed.materaiNominal ?? DEFAULT.materaiNominal,
+          plans: DEFAULT.plans.map((d, i) => ({
+            ...d,
+            ...(parsed.plans && parsed.plans[i] ? parsed.plans[i] : {}),
+            layanan: d.layanan,
+            local: d.local,
+            intl: d.intl,
+            alatFree: d.alatFree,
+          })),
+        };
+      } catch {
+        return structuredClone(DEFAULT);
+      }
+    }
+
+    function saveSettings(s) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+    }
+
+    let settings = loadSettings();
+
+    function formatRp(n) {
+      return "Rp " + Math.round(n).toLocaleString("id-ID");
+    }
+
+    function withPpn(base, rate) {
+      return base * (1 + rate / 100);
+    }
+
+    /** Materai: pembayaran > batas → 1 lembar saja */
+    function calcMaterai(amount, threshold, nominal) {
+      if (amount <= threshold) return { count: 0, total: 0 };
+      return { count: 1, total: nominal };
+    }
+
+    function getModemScheme() {
+      const el = document.querySelector('input[name="modemScheme"]:checked');
+      return el ? el.value : "rent";
+    }
+
+    function getPph23Scheme() {
+      const el = document.querySelector('input[name="pph23Scheme"]:checked');
+      return el ? el.value : "none";
+    }
+
+    function calcRow(plan, instalasiBase, ppnRate, pph23Rate, modemScheme, usePph23, materaiThreshold, materaiNominal) {
+      const instalasiPpn = withPpn(instalasiBase, ppnRate);
+      const bulananPpn = withPpn(plan.bulanan, ppnRate);
+
+      let dppAwal = instalasiBase;
+      let dppBulanan = plan.bulanan;
+      let modemLabel = "—";
+
+      if (plan.alatFree) {
+        modemLabel = "Free";
+      } else if (modemScheme === "buy") {
+        dppAwal += plan.alatBuy;
+        modemLabel = formatRp(withPpn(plan.alatBuy, ppnRate));
+      } else {
+        dppBulanan += plan.alatRent;
+        modemLabel = formatRp(withPpn(plan.alatRent, ppnRate)) + " / bln";
+      }
+
+      const totalAwal = withPpn(dppAwal, ppnRate);
+      const totalBulanan = withPpn(dppBulanan, ppnRate);
+
+      const pph23Awal = usePph23 ? dppAwal * (pph23Rate / 100) : 0;
+      const pph23Bulanan = usePph23 ? dppBulanan * (pph23Rate / 100) : 0;
+      const netAwal = totalAwal - pph23Awal;
+      const netBulanan = totalBulanan - pph23Bulanan;
+
+      const materaiAwalObj = calcMaterai(totalAwal, materaiThreshold, materaiNominal);
+      const materaiBulananObj = calcMaterai(totalBulanan, materaiThreshold, materaiNominal);
+      const materaiAwal = materaiAwalObj.total;
+      const materaiBulanan = materaiBulananObj.total;
+      const bayarAwal = totalAwal + materaiAwal;
+      const bayarBulanan = totalBulanan + materaiBulanan;
+
+      return {
+        bulananPpn,
+        instalasiPpn,
+        modemLabel,
+        totalAwal,
+        totalBulanan,
+        pph23Awal,
+        pph23Bulanan,
+        netAwal,
+        netBulanan,
+        materaiAwal,
+        materaiBulanan,
+        materaiAwalCount: materaiAwalObj.count,
+        materaiBulananCount: materaiBulananObj.count,
+        bayarAwal,
+        bayarBulanan,
+      };
+    }
+
+    function formatModemCell(label) {
+      if (label === "Free") return '<span class="tag-free">Free</span>';
+      if (label === "—") return '<span class="dash">—</span>';
+      return label;
+    }
+
+    function formatMateraiCell(amount, count) {
+      if (count === 0) return '<span class="dash">—</span>';
+      return formatRp(amount) + '<span class="materai-lbr">1 lbr</span>';
+    }
+
+    function buildTableHead(usePph23, modemScheme) {
+      const modemSub = modemScheme === "buy" ? "beli" : "sewa/bln";
+      const pphCols = usePph23 ? 4 : 0;
+      const rincianCols = 3;
+      const tagihanCols = 2;
+      const bayarCols = 2;
+
+      let g = `<tr class="head-group">
+        <th rowspan="2" class="col-sticky">Paket</th>
+        <th colspan="2" class="grp-spec">Spesifikasi</th>
+        <th colspan="${rincianCols}" class="grp-rincian">Rincian biaya</th>
+        <th colspan="${tagihanCols}" class="grp-tagihan">Total tagihan</th>`;
+      if (usePph23) g += `<th colspan="${pphCols}" class="grp-pph">PPh 23</th>`;
+      g += `<th colspan="${bayarCols}" class="grp-awal">Pembayaran awal</th>
+        <th colspan="${bayarCols}" class="grp-bulan">Pembayaran bulanan</th>
+      </tr>
+      <tr class="head-detail">
+        <th class="grp-spec">Local</th>
+        <th class="grp-spec">Internasional</th>
+        <th class="grp-rincian">Bulanan<small>sudah PPN</small></th>
+        <th class="grp-rincian">Instalasi<small>sudah PPN</small></th>
+        <th class="grp-rincian">Modem<small>${modemSub}</small></th>
+        <th class="grp-tagihan">Awal<small>sudah PPN</small></th>
+        <th class="grp-tagihan">Bulanan<small>sudah PPN</small></th>`;
+      if (usePph23) {
+        g += `
+        <th class="grp-pph">Potongan<small>awal</small></th>
+        <th class="grp-pph">Net<small>awal</small></th>
+        <th class="grp-pph">Potongan<small>bulanan</small></th>
+        <th class="grp-pph">Net<small>bulanan</small></th>`;
+      }
+      g += `
+        <th class="grp-awal">Materai</th>
+        <th class="grp-awal">Total bayar</th>
+        <th class="grp-bulan">Materai</th>
+        <th class="grp-bulan">Total bayar</th>
+      </tr>`;
+      return g;
+    }
+
+    function buildTableRow(p, r, usePph23) {
+      let row = `<tr>
+        <td class="layanan col-sticky"><span class="plan-name">${p.layanan}</span></td>
+        <td class="bw grp-spec"><strong>${p.local}</strong></td>
+        <td class="bw grp-spec">${p.intl}</td>
+        <td class="num grp-rincian">${formatRp(r.bulananPpn)}</td>
+        <td class="num grp-rincian">${formatRp(r.instalasiPpn)}</td>
+        <td class="num grp-rincian">${formatModemCell(r.modemLabel)}</td>
+        <td class="num grp-tagihan">${formatRp(r.totalAwal)}</td>
+        <td class="num grp-tagihan">${formatRp(r.totalBulanan)}</td>`;
+
+      if (usePph23) {
+        row += `
+        <td class="num grp-pph">${formatRp(r.pph23Awal)}</td>
+        <td class="num grp-pph">${formatRp(r.netAwal)}</td>
+        <td class="num grp-pph">${formatRp(r.pph23Bulanan)}</td>
+        <td class="num grp-pph">${formatRp(r.netBulanan)}</td>`;
+      }
+
+      row += `
+        <td class="num grp-awal">${formatMateraiCell(r.materaiAwal, r.materaiAwalCount)}</td>
+        <td class="num grp-awal bayar-final">${formatRp(r.bayarAwal)}</td>
+        <td class="num grp-bulan">${formatMateraiCell(r.materaiBulanan, r.materaiBulananCount)}</td>
+        <td class="num grp-bulan bayar-final">${formatRp(r.bayarBulanan)}</td>
+      </tr>`;
+      return row;
+    }
+
+    function renderMain() {
+      const { ppnRate, pph23Rate, instalasiBase, materaiThreshold, materaiNominal } = settings;
+      const modemScheme = getModemScheme();
+      const usePph23 = getPph23Scheme() === "withhold";
+
+      document.getElementById("ppnLabel").textContent = "Sudah termasuk PPN " + ppnRate + "%";
+      document.getElementById("pphBadge").classList.toggle("on", usePph23);
+      document.getElementById("pphBadge").textContent =
+        "Pemotongan PPh 23 " + pph23Rate + "% dari DPP";
+
+      const termPph = document.getElementById("termPph23");
+      if (usePph23) {
+        termPph.style.display = "list-item";
+        termPph.textContent =
+          "Apabila berlaku pemotongan PPh 23 sebesar " +
+          pph23Rate +
+          "% dari DPP, net yang diterima penyedia = total tagihan (sudah PPN) dikurangi PPh 23. Pelanggan tetap menyetor PPh 23 ke negara.";
+      } else {
+        termPph.style.display = "none";
+      }
+
+      document.getElementById("termPpn").textContent =
+        "Harga di atas sudah termasuk PPN " + ppnRate + "%.";
+
+      document.getElementById("termMaterai").textContent =
+        "Pembayaran di atas " +
+        formatRp(materaiThreshold) +
+        " dikenakan materai 1 lembar (" +
+        formatRp(materaiNominal) +
+        ", dilampirkan pada bukti bayar).";
+
+      document.getElementById("tableHead").innerHTML = buildTableHead(usePph23, modemScheme);
+
+      document.getElementById("tableBody").innerHTML = settings.plans
+        .map((plan) => {
+          const r = calcRow(
+            plan,
+            instalasiBase,
+            ppnRate,
+            pph23Rate,
+            modemScheme,
+            usePph23,
+            materaiThreshold,
+            materaiNominal
+          );
+          return buildTableRow(plan, r, usePph23);
+        })
+        .join("");
+    }
+
+    function renderSettingsForm() {
+      document.getElementById("setInstalasi").value = settings.instalasiBase;
+      document.getElementById("setPpn").value = settings.ppnRate;
+      document.getElementById("setPph23").value = settings.pph23Rate;
+      document.getElementById("setMateraiThreshold").value = settings.materaiThreshold;
+      document.getElementById("setMateraiNominal").value = settings.materaiNominal;
+      document.getElementById("planSettingsBody").innerHTML = settings.plans
+        .map(
+          (p, i) => `<tr>
+          <td class="layanan">${p.layanan}</td>
+          <td><input type="number" data-plan="${i}" data-field="bulanan" value="${p.bulanan}" min="0" step="1000" /></td>
+          <td>${p.alatFree ? "—" : `<input type="number" data-plan="${i}" data-field="alatBuy" value="${p.alatBuy}" min="0" step="1000" />`}</td>
+          <td>${p.alatFree ? "—" : `<input type="number" data-plan="${i}" data-field="alatRent" value="${p.alatRent}" min="0" step="1000" />`}</td>
+        </tr>`
+        )
+        .join("");
+    }
+
+    function readSettingsFromForm() {
+      settings.instalasiBase = Number(document.getElementById("setInstalasi").value) || 0;
+      settings.ppnRate = Number(document.getElementById("setPpn").value) || 0;
+      settings.pph23Rate = Number(document.getElementById("setPph23").value) || 0;
+      settings.materaiThreshold = Number(document.getElementById("setMateraiThreshold").value) || 0;
+      settings.materaiNominal = Number(document.getElementById("setMateraiNominal").value) || 0;
+      document.querySelectorAll("#planSettingsBody input[data-plan]").forEach((input) => {
+        const i = Number(input.dataset.plan);
+        const field = input.dataset.field;
+        settings.plans[i][field] = Number(input.value) || 0;
+      });
+    }
+
+    function showToast() {
+      const t = document.getElementById("toast");
+      t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), 2000);
+    }
+
+    function route() {
+      const isSettings = location.hash === "#pengaturan";
+      document.getElementById("view-main").classList.toggle("active", !isSettings);
+      document.getElementById("view-settings").classList.toggle("active", isSettings);
+      document.title = isSettings
+        ? "Pengaturan — Biznet Metronet"
+        : "Biznet Metronet — Price List";
+      if (isSettings) renderSettingsForm();
+      else renderMain();
+    }
+
+    document.querySelectorAll('input[name="modemScheme"], input[name="pph23Scheme"]').forEach((el) => {
+      el.addEventListener("change", renderMain);
+    });
+
+    document.getElementById("btnSave").addEventListener("click", () => {
+      readSettingsFromForm();
+      saveSettings(settings);
+      showToast();
+      setTimeout(() => { location.hash = ""; }, 400);
+    });
+
+    document.getElementById("btnReset").addEventListener("click", () => {
+      if (confirm("Reset semua pengaturan ke nilai default?")) {
+        settings = structuredClone(DEFAULT);
+        saveSettings(settings);
+        renderSettingsForm();
+        showToast();
+      }
+    });
+
+    window.addEventListener("hashchange", route);
+    route();
+  </script>
+</body>
+</html>
