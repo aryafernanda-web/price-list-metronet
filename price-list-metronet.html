@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Biznet Metronet — Price List</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy:    #012b5e;
+      --blue:    #0062cc;
+      --blue-lt: #deeeff;
+      --sky:     #e8f4ff;
+      --orange:  #d96000;
+      --orn-bg:  #fff4e6;
+      --green:   #1a7a40;
+      --grn-bg:  #e8f8ee;
+      --purple:  #5e35b1;
+      --prp-bg:  #ede7f6;
+      --border:  #dde4ee;
+      --text:    #1a2535;
+      --sub:     #5a6a82;
+      --bg:      #eef2f7;
+      --card:    #fff;
+      --r:       12px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 14px;
+    }
+
+    /* VIEW TOGGLE */
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* ═══ HEADER ════════════════════════════════════ */
+    .hdr {
+      background: linear-gradient(135deg, #011e45 0%, var(--blue) 100%);
+      color: #fff;
+      padding: 28px 20px 22px;
+      text-align: center;
+      position: relative;
+    }
+    .hdr-brand { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; opacity: .6; margin-bottom: 6px; }
+    .hdr h1    { font-size: 22px; font-weight: 900; letter-spacing: -.3px; }
+    .hdr-sub   { font-size: 13px; opacity: .65; margin-top: 5px; }
+    .hdr-badges { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.25);
+      padding: 4px 14px; border-radius: 999px; font-size: 12px; font-weight: 500;
+    }
+    .badge-ppn { }
+    .badge-pph { display: none; background: rgba(217,96,0,.3); border-color: rgba(255,140,50,.4); }
+    .badge-pph.on { display: inline-flex; }
+    .hdr-settings {
+      position: absolute; top: 16px; right: 18px;
+      background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.28);
+      color: #fff; text-decoration: none; padding: 6px 14px; border-radius: 8px;
+      font-size: 12px; font-weight: 600; transition: background .18s;
+    }
+    .hdr-settings:hover { background: rgba(255,255,255,.28); }
+
+    /* ═══ WRAP ══════════════════════════════════════ */
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 24px 18px 48px; }
+
+    /* ═══ CONTROLS ══════════════════════════════════ */
+    .controls { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 24px; }
+    .ctrl {
+      flex: 1; min-width: 210px;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 13px 16px;
+    }
+    .ctrl-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--sub); margin-bottom: 9px; }
+    .ctrl-opts  { display: flex; gap: 7px; flex-wrap: wrap; }
+    .ctrl-opts label {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 5px 14px; border-radius: 999px; border: 1.5px solid var(--border);
+      font-size: 13px; font-weight: 500; cursor: pointer; transition: all .14s; user-select: none;
+    }
+    .ctrl-opts label:has(input:checked) {
+      background: var(--blue); border-color: var(--blue); color: #fff; font-weight: 600;
+    }
+    .ctrl-opts input { display: none; }
+
+    /* ═══ SECTION HEAD ══════════════════════════════ */
+    .sec { margin-bottom: 12px; }
+    .sec h2 { font-size: 15px; font-weight: 700; color: var(--navy); }
+    .sec p  { font-size: 12px; color: var(--sub); margin-top: 2px; }
+
+    /* ═══ CARDS GRID ════════════════════════════════ */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    /* ── single card ── */
+    .card {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: var(--r);
+      display: flex; flex-direction: column;
+      box-shadow: 0 2px 12px rgba(1,43,94,.08);
+      transition: transform .18s, box-shadow .18s, border-color .18s;
+      overflow: hidden;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(1,43,94,.14);
+      border-color: var(--blue);
+    }
+
+    /* card top strip */
+    .card-top {
+      background: linear-gradient(135deg, #012050 0%, var(--blue) 100%);
+      padding: 16px 15px 13px; color: #fff;
+    }
+    .card-top .pkg   { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; opacity: .7; }
+    .card-top .speed { font-size: 32px; font-weight: 900; line-height: 1; margin: 3px 0 2px; letter-spacing: -1px; }
+    .card-top .speed small { font-size: 13px; font-weight: 600; opacity: .75; }
+    .card-top .intl  { font-size: 11px; opacity: .55; }
+
+    /* card body */
+    .card-body { padding: 13px 14px 14px; flex: 1; display: flex; flex-direction: column; gap: 0; }
+
+    /* ── Komponen section ── */
+    .comp-head {
+      font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em;
+      color: var(--sub); margin-bottom: 6px; margin-top: 2px;
+    }
+    .comp-line {
+      display: flex; justify-content: space-between; align-items: baseline;
+      padding: 5px 0; border-bottom: 1px dashed #edf0f5;
+    }
+    .comp-line:last-of-type { border-bottom: none; }
+    .comp-line .lbl { font-size: 12px; color: var(--sub); }
+    .comp-line .val { font-size: 12px; font-weight: 600; color: var(--text); }
+    .comp-line .val.free { color: var(--green); font-weight: 700; }
+
+    /* ── PPN line ── */
+    .ppn-wrap { margin: 8px 0 4px; border-top: 1.5px solid var(--border); padding-top: 7px; }
+    .ppn-line {
+      display: flex; justify-content: space-between; align-items: baseline;
+    }
+    .ppn-line .lbl { font-size: 11.5px; font-weight: 600; color: var(--orange); }
+    .ppn-line .val { font-size: 12px; font-weight: 700; color: var(--orange); }
+
+    /* ── Total boxes ── */
+    .tot-bulanan {
+      background: var(--sky);
+      border: 1.5px solid #b8d9f8;
+      border-radius: 9px;
+      padding: 10px 12px;
+      margin-top: 8px;
+    }
+    .tot-awal {
+      background: var(--prp-bg);
+      border: 1.5px solid #c5b0f0;
+      border-radius: 9px;
+      padding: 10px 12px;
+      margin-top: 7px;
+    }
+    .tot-label {
+      font-size: 9.5px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .09em; margin-bottom: 3px;
+    }
+    .tot-bulanan .tot-label { color: var(--blue); }
+    .tot-awal    .tot-label { color: var(--purple); }
+    .tot-amount  { font-size: 16px; font-weight: 800; }
+    .tot-bulanan .tot-amount { color: var(--navy); }
+    .tot-awal    .tot-amount { color: var(--purple); }
+    .tot-note    { font-size: 10px; color: var(--sub); margin-top: 3px; }
+    .chip-mat {
+      display: inline-block; background: #fff3cd; color: #7a5000;
+      font-size: 9.5px; font-weight: 700; padding: 1px 6px; border-radius: 4px; margin-left: 4px;
+    }
+
+    /* PPh box */
+    .pph-box {
+      background: var(--orn-bg); border: 1.5px solid #f0c090;
+      border-radius: 9px; padding: 8px 12px; margin-top: 7px; display: none;
+    }
+    .pph-box.on { display: block; }
+    .pph-box .tot-label { color: var(--orange); }
+    .pph-box .tot-amount { font-size: 13px; color: var(--orange); }
+
+    /* ═══ SUMMARY TABLE ═════════════════════════════ */
+    .tbl-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--r); overflow: hidden;
+      box-shadow: 0 2px 12px rgba(1,43,94,.08); margin-bottom: 24px;
+    }
+    .tbl-head {
+      background: linear-gradient(90deg, #011e45, var(--blue));
+      color: #fff; padding: 11px 18px;
+      font-size: 13px; font-weight: 700;
+      display: flex; align-items: center; gap: 7px;
+    }
+    .tbl-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 640px; }
+    thead tr { background: #f4f7fc; }
+    th {
+      padding: 9px 14px; text-align: left; font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .06em; color: var(--sub);
+      border-bottom: 2px solid var(--border); white-space: nowrap;
+    }
+    th.r, td.r { text-align: right; }
+    td { padding: 11px 14px; border-bottom: 1px solid #f0f3f8; vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f6faff; }
+    .t-pkg  { font-weight: 700; color: var(--navy); font-size: 13px; }
+    .t-spd  {
+      display: inline-block; background: var(--blue-lt); color: var(--blue);
+      padding: 2px 9px; border-radius: 999px; font-size: 11px; font-weight: 700; margin-left: 4px;
+    }
+    .t-num  { font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .t-ppn  { color: var(--orange); font-weight: 700; }
+    .t-free { color: var(--green); font-weight: 700; }
+    .t-big  { font-weight: 800; font-size: 13.5px; }
+    .t-navy { color: var(--navy); }
+    .t-prp  { color: var(--purple); }
+    .t-pph  { color: var(--orange); font-size: 12px; }
+    .t-dash { color: #bcc8da; }
+
+    /* ═══ INFO ══════════════════════════════════════ */
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+    @media(max-width:600px) { .info-grid { grid-template-columns: 1fr; } }
+    .info-box {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 16px 18px;
+    }
+    .info-box h3  { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 9px; }
+    .info-box ol,
+    .info-box ul  { padding-left: 17px; font-size: 12.5px; color: var(--text); }
+    .info-box li  { margin-bottom: 5px; line-height: 1.55; }
+    .info-box hr  { border: none; border-top: 1px dashed var(--border); margin: 11px 0; }
+
+    /* ═══ FOOTER ════════════════════════════════════ */
+    footer { text-align: center; font-size: 11.5px; color: var(--sub); padding-top: 14px; border-top: 1px solid var(--border); }
+
+    /* ═══ SETTINGS ══════════════════════════════════ */
+    #view-settings { max-width: 860px; margin: 0 auto; padding: 24px 18px; }
+    .set-hdr { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+    .set-hdr a { text-decoration: none; color: var(--blue); font-weight: 600; font-size: 13px; }
+    .set-hdr h2 { font-size: 18px; font-weight: 800; color: var(--navy); }
+    .scard {
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--r);
+      padding: 18px 20px; margin-bottom: 14px;
+    }
+    .scard h3 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--navy); margin-bottom: 14px; }
+    .sgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+    .sgrid label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 600; color: var(--sub); }
+    .sgrid input, .set-table input {
+      padding: 8px 10px; font-size: 14px; border: 1.5px solid var(--border);
+      border-radius: 7px; font-family: 'Inter', sans-serif; color: var(--text); transition: border-color .14s;
+    }
+    .sgrid input:focus, .set-table input:focus { outline: none; border-color: var(--blue); }
+    .set-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .set-table th {
+      background: #f4f7fc; color: var(--sub); font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .06em;
+      padding: 9px 11px; border: 1px solid var(--border); text-align: left;
+    }
+    .set-table td { border: 1px solid var(--border); padding: 7px 9px; }
+    .set-table input { width: 100%; min-width: 90px; padding: 6px; text-align: right; }
+    .act { display: flex; gap: 9px; flex-wrap: wrap; margin-top: 18px; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 9px 18px; border-radius: 8px; border: none; cursor: pointer;
+      font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
+      text-decoration: none; transition: background .15s, transform .1s;
+    }
+    .btn:active { transform: scale(.97); }
+    .btn-p  { background: var(--blue); color: #fff; }
+    .btn-p:hover  { background: var(--navy); }
+    .btn-s  { background: var(--card); color: var(--blue); border: 1.5px solid var(--blue); }
+    .btn-s:hover  { background: var(--blue-lt); }
+    .btn-g  { background: transparent; color: var(--sub); border: 1.5px solid var(--border); }
+    .btn-g:hover  { background: var(--bg); }
+
+    /* TOAST */
+    .toast {
+      position: fixed; bottom: 22px; right: 22px;
+      background: var(--green); color: #fff; padding: 11px 18px; border-radius: 9px;
+      font-size: 13px; font-weight: 600; box-shadow: 0 4px 18px rgba(0,0,0,.18);
+      opacity: 0; pointer-events: none; transition: opacity .22s, transform .22s;
+      transform: translateY(8px);
+    }
+    .toast.on { opacity: 1; transform: translateY(0); }
+
+    @media(max-width:480px) {
+      .hdr h1 { font-size: 18px; }
+      .hdr-settings { font-size: 11px; padding: 5px 10px; top: 12px; right: 12px; }
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════ MAIN ══════════════ -->
+<div id="view-main" class="view active">
+  <header class="hdr">
+    <a class="hdr-settings" href="#pengaturan">⚙ Pengaturan</a>
+    <div class="hdr-brand">PT Supra Primatama Nusantara (Biznet)</div>
+    <h1>Biznet Metronet — Price List</h1>
+    <p class="hdr-sub">Layanan Broadband Internet Dedicated</p>
+    <div class="hdr-badges">
+      <span class="badge badge-ppn" id="badgePpn">📌 Harga belum termasuk PPN</span>
+      <span class="badge badge-pph" id="badgePph">⚡ Pemotongan PPh 23 aktif</span>
+    </div>
+  </header>
+
+  <div class="wrap">
+
+    <!-- Skema -->
+    <div class="controls">
+      <div class="ctrl">
+        <div class="ctrl-title">🖥 Skema Modem</div>
+        <div class="ctrl-opts">
+          <label><input type="radio" name="modemScheme" value="rent" checked>Sewa / bulan</label>
+          <label><input type="radio" name="modemScheme" value="buy">Beli (sekali)</label>
+        </div>
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-title">📋 PPh Pasal 23</div>
+        <div class="ctrl-opts">
+          <label><input type="radio" name="pphScheme" value="no" checked>Tanpa pemotongan</label>
+          <label><input type="radio" name="pphScheme" value="yes">Dengan pemotongan</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cards -->
+    <div class="sec">
+      <h2>Rincian Harga per Paket</h2>
+      <p>Harga komponen ditampilkan <strong>belum PPN</strong>. PPN dan total akhir dihitung otomatis di bawah setiap kartu.</p>
+    </div>
+    <div class="grid" id="cards"></div>
+
+    <!-- Table -->
+    <div class="sec">
+      <h2>Tabel Perbandingan Semua Paket</h2>
+      <p>Ringkasan biaya awal dan bulanan semua paket sudah termasuk PPN.</p>
+    </div>
+    <div class="tbl-card">
+      <div class="tbl-head">📊 Perbandingan Harga</div>
+      <div class="tbl-scroll">
+        <table>
+          <thead id="tHead"></thead>
+          <tbody id="tBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Info -->
+    <div class="info-grid">
+      <div class="info-box">
+        <h3>📋 Syarat &amp; Ketentuan</h3>
+        <ol>
+          <li id="tPpn">Harga komponen belum termasuk PPN 11%.</li>
+          <li id="tPph" style="display:none;"></li>
+          <li id="tMat">Pembayaran di atas Rp 5.000.000 dikenakan materai 1 lembar.</li>
+          <li>Sistem pembayaran voucher prabayar.</li>
+          <li>Pemasangan 3–8 hari kerja (area on-net).</li>
+          <li>Paket ≥ 500 Mbps perlu survey infrastruktur.</li>
+          <li>Metronet 1D tidak tersedia untuk gedung bertingkat tinggi.</li>
+        </ol>
+      </div>
+      <div class="info-box">
+        <h3>💡 Cara Membaca Price List</h3>
+        <ul>
+          <li><strong>Harga Komponen</strong> = harga asli sebelum PPN.</li>
+          <li><strong>PPN 11%</strong> = dihitung dari total komponen yang berlaku.</li>
+          <li><strong>Total / Bulan</strong> = Internet + Modem Sewa + PPN (dibayar tiap bulan).</li>
+          <li><strong>Biaya Awal</strong> = Bulan Pertama + Instalasi + Modem Beli + PPN (dibayar sekali di awal).</li>
+          <li><strong>Materai</strong> ditambahkan jika total &gt; Rp 5 juta.</li>
+        </ul>
+        <hr>
+        <h3>✅ Fitur Semua Paket</h3>
+        <ul>
+          <li>Internet tanpa kuota, 1 Dynamic IP Address.</li>
+          <li>Customer service 24/7/365.</li>
+          <li>Koneksi RJ45 Ethernet ke Router / Switch.</li>
+        </ul>
+      </div>
+    </div>
+
+    <footer>
+      <strong>PT Supra Primatama Nusantara</strong> (Biznet) &nbsp;·&nbsp;
+      MidPlaza 2 Lt 8, Jl Jend Sudirman 10-11, Jakarta 10220 &nbsp;·&nbsp;
+      www.biznetnetworks.com
+    </footer>
+  </div>
+</div>
+
+<!-- ══════════════ SETTINGS ══════════════ -->
+<div id="view-settings" class="view">
+  <div style="max-width:860px;margin:0 auto;padding:24px 18px;">
+    <div class="set-hdr">
+      <a href="#">← Kembali</a>
+      <h2>⚙ Pengaturan Harga</h2>
+    </div>
+
+    <div class="scard">
+      <h3>Parameter Umum</h3>
+      <div class="sgrid">
+        <label>Biaya Instalasi (belum PPN) — Rp<input type="number" id="sInst" min="0" step="50000"></label>
+        <label>Tarif PPN (%)<input type="number" id="sPpn" min="0" max="100" step="0.1"></label>
+        <label>Tarif PPh 23 (% dari DPP)<input type="number" id="sPph" min="0" max="100" step="0.1"></label>
+        <label>Batas Materai — Rp<input type="number" id="sMat" min="0" step="100000"></label>
+        <label>Nilai Materai / lembar — Rp<input type="number" id="sMatNom" min="0" step="1000"></label>
+      </div>
+    </div>
+
+    <div class="scard">
+      <h3>Harga Dasar Per Paket (Belum PPN)</h3>
+      <div style="overflow-x:auto;">
+        <table class="set-table">
+          <thead><tr>
+            <th>Paket</th>
+            <th>Biaya Bulanan (Rp)</th>
+            <th>Beli Modem (Rp)</th>
+            <th>Sewa Modem/bln (Rp)</th>
+          </tr></thead>
+          <tbody id="setPlanBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="act">
+      <button class="btn btn-p" id="btnSave">💾 Simpan</button>
+      <a href="#" class="btn btn-s">← Batal</a>
+      <button class="btn btn-g" id="btnReset">↺ Reset Default</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">✔ Tersimpan</div>
+
+<script>
+/* ── DATA DEFAULT ─────────────────────────────── */
+const DEF = {
+  inst:  1250000,
+  ppn:   11,
+  pph:   2,
+  matLim: 5000000,
+  matVal: 10000,
+  plans: [
+    { name:"Metronet 1D", speed:"100 Mbps", intl:"s.d. 100 Mbps", mo:1000000, buy:1100000, rent:50000, free:false },
+    { name:"Metronet 2D", speed:"150 Mbps", intl:"s.d. 150 Mbps", mo:1700000, buy:1100000, rent:50000, free:false },
+    { name:"Metronet 3D", speed:"200 Mbps", intl:"s.d. 200 Mbps", mo:2700000, buy:1100000, rent:50000, free:false },
+    { name:"Metronet 4D", speed:"450 Mbps", intl:"s.d. 450 Mbps", mo:6500000, buy:0,       rent:0,     free:true  },
+    { name:"Metronet 5D", speed:"900 Mbps", intl:"s.d. 900 Mbps", mo:12500000,buy:0,       rent:0,     free:true  },
+  ],
+};
+
+const KEY = "biznet_v4";
+const rp  = n => "Rp\u00A0" + Math.round(n).toLocaleString("id-ID");
+
+function load() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return structuredClone(DEF);
+    const p = JSON.parse(raw);
+    return {
+      inst:   p.inst   ?? DEF.inst,
+      ppn:    p.ppn    ?? DEF.ppn,
+      pph:    p.pph    ?? DEF.pph,
+      matLim: p.matLim ?? DEF.matLim,
+      matVal: p.matVal ?? DEF.matVal,
+      plans:  DEF.plans.map((d, i) => ({
+        ...d,
+        ...(p.plans && p.plans[i] ? { mo: p.plans[i].mo, buy: p.plans[i].buy, rent: p.plans[i].rent } : {}),
+      })),
+    };
+  } catch { return structuredClone(DEF); }
+}
+
+let C = load();
+
+const getModem = () => (document.querySelector('input[name="modemScheme"]:checked') || {value:"rent"}).value;
+const withPph  = () => (document.querySelector('input[name="pphScheme"]:checked')   || {value:"no"}).value === "yes";
+
+/* ── KALKULASI ───────────────────────────────── */
+function calc(plan) {
+  const modem  = getModem();
+  const usePph = withPph();
+
+  // ── Komponen BULANAN (belum PPN)
+  const moRent   = (!plan.free && modem === "rent") ? plan.rent : 0;
+  const dppBulan = plan.mo + moRent;
+  const ppnBulan = dppBulan * C.ppn / 100;
+  const totBulan = dppBulan + ppnBulan;
+
+  // ── Komponen AWAL = Bulan Pertama + Instalasi + Modem Beli
+  const moBuy    = (!plan.free && modem === "buy") ? plan.buy : 0;
+  const dppAwal  = plan.mo + moRent + C.inst + moBuy;
+  // NB: dppAwal mencakup bulan pertama (plan.mo + moRent)
+  // agar Total Awal = bayar bulanan pertama + instalasi + modem beli
+  const ppnAwal  = dppAwal * C.ppn / 100;
+  const totAwal  = dppAwal + ppnAwal;
+
+  // Materai
+  const matBulan = totBulan > C.matLim ? C.matVal : 0;
+  const matAwal  = totAwal  > C.matLim ? C.matVal : 0;
+
+  // PPh 23
+  const pphBulan = usePph ? dppBulan * C.pph / 100 : 0;
+
+  return {
+    // komponen mentah
+    moBase: plan.free ? null : (modem === "buy" ? plan.buy : plan.rent),
+    moRent, moBuy,
+    // DPP
+    dppBulan, dppAwal,
+    // PPN
+    ppnBulan, ppnAwal,
+    // total sebelum materai
+    totBulan, totAwal,
+    // materai
+    matBulan, matAwal,
+    // PPh
+    pphBulan,
+    // bayar final
+    bayarBulan: totBulan + matBulan,
+    bayarAwal:  totAwal  + matAwal,
+    usePph,
+    modem,
+  };
+}
+
+/* ── KARTU ───────────────────────────────────── */
+function buildCards() {
+  const modem  = getModem();
+  document.getElementById("cards").innerHTML = C.plans.map(plan => {
+    const r = calc(plan);
+    const speedNum = plan.speed.replace(" Mbps","");
+
+    // --- Baris komponen bulanan ---
+    const compBulan = [];
+    compBulan.push({ l: "Biaya Internet / bulan", v: rp(plan.mo) });
+    if (plan.free) {
+      compBulan.push({ l: "Modem", v: "FREE", free: true });
+    } else if (modem === "rent") {
+      compBulan.push({ l: "Sewa Modem / bulan", v: rp(plan.rent) });
+    }
+
+    const compBulanHtml = compBulan.map(c =>
+      `<div class="comp-line">
+        <span class="lbl">${c.l}</span>
+        <span class="val${c.free?" free":""}">${c.v}</span>
+      </div>`).join("");
+
+    // --- Baris komponen awal ---
+    const compAwal = [];
+    compAwal.push({ l: "Bulan Pertama", v: rp(plan.mo + r.moRent) });
+    compAwal.push({ l: "Instalasi", v: rp(C.inst) });
+    if (!plan.free && modem === "buy") {
+      compAwal.push({ l: "Beli Modem", v: rp(plan.buy) });
+    }
+
+    const compAwalHtml = compAwal.map(c =>
+      `<div class="comp-line">
+        <span class="lbl">${c.l}</span>
+        <span class="val">${c.v}</span>
+      </div>`).join("");
+
+    const chipBulan = r.matBulan > 0 ? `<span class="chip-mat">+ materai ${rp(r.matBulan)}</span>` : "";
+    const chipAwal  = r.matAwal  > 0 ? `<span class="chip-mat">+ materai ${rp(r.matAwal)}</span>`  : "";
+
+    const pphHtml = r.usePph ? `
+      <div class="pph-box on">
+        <div class="tot-label">⬇ PPh 23 Dipotong (bulanan)</div>
+        <div class="tot-amount">${rp(r.pphBulan)}</div>
+        <div class="tot-note">Net penyedia: ${rp(r.totBulan - r.pphBulan)}</div>
+      </div>` : "";
+
+    return `
+    <div class="card">
+      <div class="card-top">
+        <div class="pkg">${plan.name}</div>
+        <div class="speed">${speedNum}<small> Mbps</small></div>
+        <div class="intl">Internasional: ${plan.intl}</div>
+      </div>
+      <div class="card-body">
+
+        <!-- BULANAN -->
+        <div class="comp-head">📅 Komponen Bulanan (belum PPN)</div>
+        ${compBulanHtml}
+        <div class="ppn-wrap">
+          <div class="ppn-line">
+            <span class="lbl">PPN ${C.ppn}%</span>
+            <span class="val">+ ${rp(r.ppnBulan)}</span>
+          </div>
+        </div>
+        <div class="tot-bulanan">
+          <div class="tot-label">💰 Total / Bulan (sudah PPN)</div>
+          <div class="tot-amount">${rp(r.bayarBulan)} ${chipBulan}</div>
+          <div class="tot-note">DPP: ${rp(r.dppBulan)}</div>
+        </div>
+
+        ${pphHtml}
+
+        <!-- AWAL -->
+        <div class="comp-head" style="margin-top:12px;">🚀 Komponen Biaya Awal (belum PPN)</div>
+        ${compAwalHtml}
+        <div class="ppn-wrap">
+          <div class="ppn-line">
+            <span class="lbl">PPN ${C.ppn}%</span>
+            <span class="val">+ ${rp(r.ppnAwal)}</span>
+          </div>
+        </div>
+        <div class="tot-awal">
+          <div class="tot-label">🚀 Total Biaya Awal (sudah PPN)</div>
+          <div class="tot-amount">${rp(r.bayarAwal)} ${chipAwal}</div>
+          <div class="tot-note">Termasuk bulan pertama + instalasi${!plan.free && modem==="buy" ? " + modem" : ""}</div>
+        </div>
+
+      </div>
+    </div>`;
+  }).join("");
+}
+
+/* ── TABEL RINGKASAN ─────────────────────────── */
+function buildTable() {
+  const modem  = getModem();
+  const usePph = withPph();
+  const msub   = modem === "buy" ? "beli" : "sewa/bln";
+
+  document.getElementById("tHead").innerHTML = `<tr>
+    <th>Paket</th>
+    <th>Kecepatan</th>
+    <th class="r">Internet/bln<br><small>(belum PPN)</small></th>
+    <th class="r">Modem<br><small>(${msub}, belum PPN)</small></th>
+    <th class="r">Instalasi<br><small>(belum PPN)</small></th>
+    <th class="r" style="color:var(--orange)">PPN ${C.ppn}%<br><small>(bulanan)</small></th>
+    <th class="r" style="color:var(--orange)">PPN ${C.ppn}%<br><small>(awal)</small></th>
+    ${usePph ? `<th class="r" style="color:var(--orange)">PPh 23<br><small>(bulanan)</small></th>` : ""}
+    <th class="r" style="color:var(--navy)">💰 Total / Bulan<br><small>(sudah PPN)</small></th>
+    <th class="r" style="color:var(--purple)">🚀 Biaya Awal<br><small>(sudah PPN)</small></th>
+  </tr>`;
+
+  document.getElementById("tBody").innerHTML = C.plans.map(plan => {
+    const r = calc(plan);
+    const modemCell = plan.free ? `<span class="t-free">FREE</span>`
+                    : (modem === "buy" ? `<span class="t-num">${rp(plan.buy)}</span>`
+                                       : `<span class="t-num">${rp(plan.rent)}</span>`);
+    const chipB = r.matBulan > 0 ? `<span class="chip-mat">+mat</span>` : "";
+    const chipA = r.matAwal  > 0 ? `<span class="chip-mat">+mat</span>` : "";
+    const pphCell = usePph ? `<td class="r t-pph">(${rp(r.pphBulan)})</td>` : "";
+
+    return `<tr>
+      <td><span class="t-pkg">${plan.name}</span></td>
+      <td><span class="t-spd">${plan.speed}</span></td>
+      <td class="r t-num">${rp(plan.mo)}</td>
+      <td class="r">${modemCell}</td>
+      <td class="r t-num">${rp(C.inst)}</td>
+      <td class="r t-ppn">${rp(r.ppnBulan)}</td>
+      <td class="r t-ppn">${rp(r.ppnAwal)}</td>
+      ${pphCell}
+      <td class="r t-big t-navy">${rp(r.bayarBulan)} ${chipB}</td>
+      <td class="r t-big t-prp">${rp(r.bayarAwal)} ${chipA}</td>
+    </tr>`;
+  }).join("");
+}
+
+/* ── META / BADGE ────────────────────────────── */
+function updateMeta() {
+  const usePph = withPph();
+  document.getElementById("badgePpn").textContent = `📌 Harga belum termasuk PPN ${C.ppn}%`;
+  document.getElementById("badgePph").classList.toggle("on", usePph);
+  document.getElementById("badgePph").textContent  = `⚡ PPh 23 ${C.pph}% aktif`;
+  document.getElementById("tPpn").textContent = `Harga komponen belum termasuk PPN ${C.ppn}%.`;
+  document.getElementById("tMat").textContent = `Pembayaran di atas ${rp(C.matLim)} dikenakan materai 1 lembar (${rp(C.matVal)}).`;
+  const tp = document.getElementById("tPph");
+  if (usePph) {
+    tp.style.display = "list-item";
+    tp.textContent = `PPh 23 ${C.pph}% dari DPP dipotong pelanggan dan disetor ke negara.`;
+  } else {
+    tp.style.display = "none";
+  }
+}
+
+function renderMain() { updateMeta(); buildCards(); buildTable(); }
+
+/* ── SETTINGS FORM ───────────────────────────── */
+function renderForm() {
+  document.getElementById("sInst").value   = C.inst;
+  document.getElementById("sPpn").value    = C.ppn;
+  document.getElementById("sPph").value    = C.pph;
+  document.getElementById("sMat").value    = C.matLim;
+  document.getElementById("sMatNom").value = C.matVal;
+  document.getElementById("setPlanBody").innerHTML = C.plans.map((p, i) => `
+    <tr>
+      <td style="font-weight:600;white-space:nowrap;">${p.name}</td>
+      <td><input type="number" data-i="${i}" data-f="mo"   value="${p.mo}"   min="0" step="1000"></td>
+      <td>${p.free ? '<span style="color:var(--sub)">—</span>' : `<input type="number" data-i="${i}" data-f="buy"  value="${p.buy}"  min="0" step="1000">`}</td>
+      <td>${p.free ? '<span style="color:var(--sub)">—</span>' : `<input type="number" data-i="${i}" data-f="rent" value="${p.rent}" min="0" step="1000">`}</td>
+    </tr>`).join("");
+}
+
+function readForm() {
+  C.inst   = +document.getElementById("sInst").value   || 0;
+  C.ppn    = +document.getElementById("sPpn").value    || 0;
+  C.pph    = +document.getElementById("sPph").value    || 0;
+  C.matLim = +document.getElementById("sMat").value    || 0;
+  C.matVal = +document.getElementById("sMatNom").value || 0;
+  document.querySelectorAll("#setPlanBody input[data-i]").forEach(el => {
+    C.plans[+el.dataset.i][el.dataset.f] = +el.value || 0;
+  });
+}
+
+/* ── ROUTING ─────────────────────────────────── */
+function route() {
+  const s = location.hash === "#pengaturan";
+  document.getElementById("view-main").classList.toggle("active", !s);
+  document.getElementById("view-settings").classList.toggle("active", s);
+  document.title = s ? "Pengaturan — Biznet Metronet" : "Biznet Metronet — Price List";
+  if (s) renderForm(); else renderMain();
+}
+
+function toast() {
+  const t = document.getElementById("toast");
+  t.classList.add("on");
+  setTimeout(() => t.classList.remove("on"), 2200);
+}
+
+/* ── EVENTS ──────────────────────────────────── */
+document.querySelectorAll('input[name="modemScheme"], input[name="pphScheme"]')
+  .forEach(el => el.addEventListener("change", renderMain));
+
+document.getElementById("btnSave").onclick = () => {
+  readForm(); localStorage.setItem(KEY, JSON.stringify(C)); toast();
+  setTimeout(() => { location.hash = ""; }, 380);
+};
+document.getElementById("btnReset").onclick = () => {
+  if (confirm("Reset semua ke default?")) {
+    C = structuredClone(DEF); localStorage.setItem(KEY, JSON.stringify(C)); renderForm(); toast();
+  }
+};
+
+window.addEventListener("hashchange", route);
+route();
+</script>
+</body>
+</html>
